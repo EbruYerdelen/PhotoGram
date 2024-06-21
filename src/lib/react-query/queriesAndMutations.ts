@@ -7,7 +7,7 @@ import {
   useInfiniteQuery,
 
 } from "@tanstack/react-query"
-import { signInAccount, createUserAccount } from "../appwrite/api"
+import { signInAccount, createUserAccount, signOutAccount } from "../appwrite/api"
 import { INewUser } from "@/types";
 
 /* 
@@ -32,3 +32,14 @@ export const useSignInAccount = () => {
     }) =>signInAccount(user)
   });
 };
+
+
+export const useSignOutAccount = () => {
+  return useMutation({
+    mutationFn: signOutAccount
+  });
+};
+//The mutationFn property expects a function that will be executed when the mutation is triggered. It does not expect the result of a function call but rather the function itself.
+// so reason signOutAccount is passed directly as mutationFn in the useSignOutAccount hook and not as signOutAccount() is due to how React Query's useMutation works like written above
+//signOutAccount: This is a reference to the function itself.
+//signOutAccount(): This is a call to the function which executes it immediately and returns the result of that execution.

@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 
 import React from 'react'
@@ -18,18 +19,24 @@ import { useForm } from "react-hook-form";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
-import { createUserAccount } from "@/lib/appwrite/api";
-import { useCreateUserAccountMutation } from "@/lib/react-query/queriesAndMutations";
+import { Link,useNavigate} from "react-router-dom";
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 
 
 const SignupForm = () => {
   const { toast } = useToast();
+  //we are getting the checkAuthUser func and isLoading state from useUserContext function that we imported which actually provides context for all child elements inside AuthProvider component.
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
   //when you call right side as the hook,it gives mutateAsync func and we rename it as createUserAccount.Sımılarly for isLoading.
   //here createUserAccount is just a rename,aim of givin this name is,mutateAsync is actually the createUserAccount Func since we defined the mutation like that by using React Query.
   //So instead of using createUserAccount func itself from appwrite,use this rename.
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccountMutation();
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
+
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -54,7 +61,25 @@ const SignupForm = () => {
       //return means,exiting the func.If we don't have a new user,so if false,exit the func.But instead,to get a warning that smth went wrong in authentication,use toaster comp by shadcn
     }
 
-    //const session = await signInAccount()
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password
+    })
+    if (!session) {
+      return toast({title: "Sign in failed.Please try again"})
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset
+
+      navigate("/")
+    } else {
+      return toast({ title: "Sign up failed.Please try again" });
+    }
+
+
   }
 
   return (
@@ -125,7 +150,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>

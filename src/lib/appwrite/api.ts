@@ -1,7 +1,8 @@
-import { ID } from "appwrite";
+import { ID, Query } from "appwrite";
 
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases } from "./config";
+
 
 //INewUser is a Typescript interface,where I refers to interface,so we'll create an object where we specify types of parameters.(just typescript logic,static types,determined)
 export async function createUserAccount(user: INewUser) {
@@ -58,4 +59,31 @@ export async function saveUserToDB(user: {
     console.log(error);
   }
   
+}
+export async function signInAccount(user: { email:string, password:string}) {
+  try {
+    const session = await account.createEmailPasswordSession(user.email, user.password);
+    return session
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+export async function getCurrentUser() {
+  try {
+    const currentAccount = await account.get();
+    if (!currentAccount) throw new Error;
+
+    const currentUser = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      [Query.equal("accountId",currentAccount.$id)]
+    )
+
+    if (!currentUser) throw new Error;
+    return currentUser.documents[0];
+  } catch (error) {
+    console.log(error);
+  }
 }

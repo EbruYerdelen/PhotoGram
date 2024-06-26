@@ -7,8 +7,9 @@ import {
   useInfiniteQuery,
 
 } from "@tanstack/react-query"
-import { signInAccount, createUserAccount, signOutAccount } from "../appwrite/api"
-import { INewUser } from "@/types";
+import { QUERY_KEYS } from "@/lib/react-query/queryKeys";
+import { signInAccount, createUserAccount, signOutAccount, createPost } from "../appwrite/api"
+import { INewPost, INewUser } from "@/types";
 
 /* 
 useCreateUserAccountMutation is a custom React hook.
@@ -43,3 +44,16 @@ export const useSignOutAccount = () => {
 // so reason signOutAccount is passed directly as mutationFn in the useSignOutAccount hook and not as signOutAccount() is due to how React Query's useMutation works like written above
 //signOutAccount: This is a reference to the function itself.
 //signOutAccount(): This is a call to the function which executes it immediately and returns the result of that execution.
+
+
+export const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (post: INewPost) => createPost(post),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+};

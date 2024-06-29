@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage, Avatars } from "appwrite"
+import { Client, Account, Databases, Storage, Avatars,ImageGravity} from "appwrite"
 
 
 export const appwriteConfig = {

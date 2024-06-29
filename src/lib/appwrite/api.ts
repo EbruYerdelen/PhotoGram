@@ -240,8 +240,14 @@ export async function likePost(postId: string, likesArray: string[]) {
 
 
 
-
-export async function savePost(userId: string, postId: string) {
+// passing params with curly braces allows u to pass params withot caring about the order userId: string, postId: string
+export async function savePost({
+  userId,
+  postId,
+}: {
+  userId: string;
+  postId: string;
+}) {
   try {
     const updatedPost = await databases.createDocument(
       appwriteConfig.databaseId,
@@ -342,19 +348,9 @@ export async function updatePost(post: IUpdatePost) {
     );
 
     // Failed to update
-    if (!updatedPost) {
-      // Delete new file that has been recently uploaded
-      if (hasFileToUpdate) {
-        await deleteFile(image.imageId);
-      }
-
-      // If no new file uploaded, just throw error
-      throw Error;
-    }
-
-    // Safely delete old file after successful update
-    if (hasFileToUpdate) {
+    if(!updatedPost){
       await deleteFile(post.imageId);
+      throw Error;
     }
 
     return updatedPost;
@@ -364,8 +360,8 @@ export async function updatePost(post: IUpdatePost) {
 }
 
 // ============================== DELETE POST
-export async function deletePost(postId?: string, imageId?: string) {
-  if (!postId || !imageId) return;
+export async function deletePost({ postId, imageId }: { postId?: string, imageId?: string }) {
+  if (!postId || !imageId) throw Error;
 
   try {
     const statusCode = await databases.deleteDocument(
@@ -378,11 +374,14 @@ export async function deletePost(postId?: string, imageId?: string) {
 
     await deleteFile(imageId);
 
-    return { status: "Ok" };
+    return { status: "ok" };
   } catch (error) {
     console.log(error);
   }
 }
+
+
+
 
 
 /*
@@ -421,4 +420,24 @@ export async function getCurrentUser() {
   }
 }
 
+*/
+
+
+
+/*
+His published code of failed to update
+if (!updatedPost) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(image.imageId);
+      }
+
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (hasFileToUpdate) {
+      await deleteFile(post.imageId);
+    }
 */

@@ -12,7 +12,9 @@ type FileUploaderProps = {
 const FileUploader = ({fieldChange , mediaUrl}: FileUploaderProps) => {
   //file state is empty array since we can set multiple files
   const [file, setFile] = useState<File[]>([]);
-  const [fileUrl, setFileUrl] = useState("");
+  const [fileUrl, setFileUrl] = useState(mediaUrl);
+  //set the fileUrl initially to mediaUrl prop you got from PostForm so that you can directly see existing image and similarly 
+  //you are able to drag a file and edit just like how you made in CreatePost
 
 
 

@@ -8,8 +8,8 @@ import {
 
 } from "@tanstack/react-query"
 import { QUERY_KEYS } from "@/lib/react-query/queryKeys";
-import { signInAccount, createUserAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost, getCurrentUser } from "../appwrite/api"
-import { INewPost, INewUser, IUpdateUser } from "@/types";
+import { signInAccount, createUserAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost, getCurrentUser, getPostById, updatePost, deletePost } from "../appwrite/api"
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
 /* 
 useCreateUserAccountMutation is a custom React hook.
@@ -125,7 +125,7 @@ queryClient.invalidateQueries is called to invalidate the cache for the specific
 export const useSavePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ postId, userId }: ISavePost) => savePost(postId, userId),
+    mutationFn: ({ postId, userId }: ISavePost) => savePost({ postId, userId }),
     onSuccess: () => {
 
       queryClient.invalidateQueries({
@@ -212,3 +212,49 @@ export const useUpdateUser = () => {
 };
 
 */
+
+
+
+export const useGetPostById = (postId:string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+    queryFn: () => getPostById(postId),
+    enabled: !!postId
+  });
+}
+/*
+enabled is true default.
+The enabled option controls whether the query should automatically run. When enabled is set to true, the query will run as soon as the component mounts or when the dependencies change. When enabled is set to false, the query will not run until it is manually enabled.
+*/
+
+
+
+export const useUpdatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (post: IUpdatePost) => updatePost(post),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
+      });
+    }
+  });
+};
+
+
+
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({postId , imageId} : {postId:string , imageId:string}) => deletePost({postId,imageId}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+  //here queryKey is set as above since in case we delete a post,we need to be able to refetch all post in homepage to show all posts without deleted one
+};
+
+
+

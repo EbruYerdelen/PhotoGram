@@ -17,7 +17,7 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
 import { PostValidation } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost, useDeletePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import Loader from "../shared/Loader";
@@ -106,7 +106,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
               <FormLabel className="shad-form_label">Caption</FormLabel>
               <FormControl>
                 <Textarea
-                  className="shad-textarea custom-scrollbar"
+                  className="custom-scrollbar shad-textarea"
                   {...field}
                 />
               </FormControl>
@@ -163,7 +163,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
             </FormItem>
           )}
         />
-        <div className="flex gap-4 items-center justify-end">
+        <div className="flex justify-end items-center gap-4">
           <Button type="button" className="shad-button_dark_4">
             Cancel
           </Button>

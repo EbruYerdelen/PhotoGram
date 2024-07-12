@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import {FileWithPath, useDropzone } from "react-dropzone";
+import { useCallback, useState } from "react";
+import { FileWithPath, useDropzone } from "react-dropzone";
 import { Button } from "../ui/button";
 
 type FileUploaderProps = {
@@ -36,12 +36,12 @@ const FileUploader = ({fieldChange , mediaUrl}: FileUploaderProps) => {
   return (
     <div
       {...getRootProps()}
-      className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer"
+      className="flex flex-col flex-center bg-dark-3 rounded-xl cursor-pointer"
     >
       <input {...getInputProps()} className="cursor-pointer" />
       {fileUrl ? (
         <>
-          <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
+          <div className="flex flex-1 justify-center p-5 lg:p-10 w-full">
             <img src={fileUrl} alt="image" className="file_uploader-img" />
           </div>
             <p className="file_uploader-label">
@@ -56,10 +56,10 @@ const FileUploader = ({fieldChange , mediaUrl}: FileUploaderProps) => {
             height={74}
             alt="file-upload"
           />
-          <h3 className="base-medium text-light-2 mb-1 mt-4">
+          <h3 className="mt-4 mb-1 text-light-2 base-medium">
             Drag photo here
           </h3>
-          <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
+          <p className="mb-6 text-light-4 small-regular">SVG, PNG, JPG</p>
           <Button className="shad-button_dark_4">Select from computer</Button>
         </div>
       )}

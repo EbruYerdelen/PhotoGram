@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query"
 import { QUERY_KEYS } from "@/lib/react-query/queryKeys";
 import { signInAccount, createUserAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost, getCurrentUser, getPostById, updatePost, deletePost, getInfinitePosts, searchPosts } from "../appwrite/api"
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
+import { INewPost, INewUser, IUpdatePost } from "@/types";
 
 /* 
 useCreateUserAccountMutation is a custom React hook.
@@ -264,14 +264,17 @@ export const useGetPosts = () => {
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: getInfinitePosts,
     getNextPageParam: (lastPage) => {
-      if (lastPage && lastPage.documents.length === 0) return null;
+      if (lastPage && lastPage.documents && lastPage.documents.length === 0) {
+        return undefined; // or null, depending on your preference
+      }
 
-      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      const lastId = lastPage?.documents[lastPage.documents.length - 1].$id;
 
-      return lastId
-    }
-  })
-}
+      return lastId ? { id: lastId } : undefined;
+    },
+    initialPageParam: undefined // Add this line
+  });
+};
 
 
 
